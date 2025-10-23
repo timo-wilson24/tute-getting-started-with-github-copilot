@@ -109,7 +109,7 @@ button:hover {
 }
 
 .message {
-  margin-top: 20px;
+  margin-top: 36px; /* increased spacing so messages appear lower on the page */
   padding: 10px;
   border-radius: 4px;
 }
