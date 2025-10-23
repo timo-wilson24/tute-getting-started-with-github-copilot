@@ -3,31 +3,76 @@ document.addEventListener("DOMContentLoaded", () => {
   const activitySelect = document.getElementById("activity");
   const signupForm = document.getElementById("signup-form");
   const messageDiv = document.getElementById("message");
+  const template = document.getElementById("activity-template");
 
-  // Function to fetch activities from API
+  // Function to fetch activities from API and render using the template
   async function fetchActivities() {
     try {
       const response = await fetch("/activities");
       const activities = await response.json();
 
-      // Clear loading message
+      // Clear loading message and existing content
       activitiesList.innerHTML = "";
 
-      // Populate activities list
-      Object.entries(activities).forEach(([name, details]) => {
-        const activityCard = document.createElement("div");
-        activityCard.className = "activity-card";
+      // Clear existing select options (keep the placeholder)
+      Array.from(activitySelect.options)
+        .filter(opt => opt.value !== "")
+        .forEach(opt => opt.remove());
 
-        const spotsLeft = details.max_participants - details.participants.length;
+      // If API returns an object (older shape), normalize to array
+      const activityArray = Array.isArray(activities)
+        ? activities
+        : Object.entries(activities || {}).map(([name, details]) => ({ name, ...details }));
 
-        activityCard.innerHTML = `
-          <h4>${name}</h4>
-          <p>${details.description}</p>
-          <p><strong>Schedule:</strong> ${details.schedule}</p>
-          <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
-        `;
+      // Populate activities using template
+      activityArray.forEach(activity => {
+        const name = activity.name || activity.title || "Unnamed Activity";
+        const participants = activity.participants || [];
+        const used = participants.length;
+        const max = activity.max_participants ?? activity.maxParticipants ?? 0;
 
-        activitiesList.appendChild(activityCard);
+        const clone = template.content.cloneNode(true);
+        const article = clone.querySelector(".activity-card");
+        if (article) article.dataset.activityName = name;
+
+        const titleEl = clone.querySelector(".activity-title");
+        if (titleEl) titleEl.textContent = name;
+
+        const descEl = clone.querySelector(".activity-desc");
+        if (descEl) descEl.textContent = activity.description || "";
+
+        const scheduleEl = clone.querySelector(".activity-schedule");
+        if (scheduleEl) scheduleEl.innerHTML = `<strong>Schedule:</strong> ${activity.schedule || ""}`;
+
+        const usedEl = clone.querySelector(".capacity-used");
+        if (usedEl) usedEl.textContent = used;
+
+        const maxEl = clone.querySelector(".capacity-max");
+        if (maxEl) maxEl.textContent = max;
+
+        const countEl = clone.querySelector(".participants-count");
+        if (countEl) countEl.textContent = used;
+
+        const listEl = clone.querySelector(".participants-list");
+        if (listEl) {
+          listEl.innerHTML = "";
+          if (participants.length) {
+            participants.forEach(p => {
+              const li = document.createElement("li");
+              const a = document.createElement("a");
+              a.href = `mailto:${p}`;
+              a.textContent = p;
+              li.appendChild(a);
+              listEl.appendChild(li);
+            });
+          } else {
+            const li = document.createElement("li");
+            li.textContent = "No participants yet";
+            listEl.appendChild(li);
+          }
+        }
+
+        activitiesList.appendChild(clone);
 
         // Add option to select dropdown
         const option = document.createElement("option");
@@ -35,6 +80,10 @@ document.addEventListener("DOMContentLoaded", () => {
         option.textContent = name;
         activitySelect.appendChild(option);
       });
+
+      if (activityArray.length === 0) {
+        activitiesList.innerHTML = "<p>No activities available.</p>";
+      }
     } catch (error) {
       activitiesList.innerHTML = "<p>Failed to load activities. Please try again later.</p>";
       console.error("Error fetching activities:", error);
@@ -62,6 +111,9 @@ document.addEventListener("DOMContentLoaded", () => {
         messageDiv.textContent = result.message;
         messageDiv.className = "success";
         signupForm.reset();
+
+        // Refresh activities so participants list is updated
+        fetchActivities();
       } else {
         messageDiv.textContent = result.detail || "An error occurred";
         messageDiv.className = "error";

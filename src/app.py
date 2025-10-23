@@ -85,7 +85,19 @@ def root():
 
 @app.get("/activities")
 def get_activities():
-    return activities
+    """
+    Return activities as a list of objects so front-end code can map/iterate reliably.
+    """
+    return [
+        {
+            "name": name,
+            "description": details["description"],
+            "schedule": details["schedule"],
+            "max_participants": details["max_participants"],
+            "participants": details.get("participants", []),
+        }
+        for name, details in activities.items()
+    ]
 
 
 @app.post("/activities/{activity_name}/signup")

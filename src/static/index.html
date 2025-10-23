@@ -19,6 +19,25 @@
           <!-- Activities will be loaded here -->
           <p>Loading activities...</p>
         </div>
+
+        <!-- Template for activity cards (used by app.js) -->
+        <template id="activity-template">
+          <article class="activity-card" data-activity-name="">
+            <h4 class="activity-title"><!-- title --></h4>
+            <p class="activity-desc"><!-- description --></p>
+            <p class="activity-schedule"><strong>Schedule:</strong> <!-- schedule --></p>
+            <p class="activity-capacity"><strong>Capacity:</strong> <span class="capacity-used"><!-- used --></span> / <span class="capacity-max"><!-- max --></span></p>
+
+            <!-- Participants section -->
+            <div class="participants">
+              <h5 class="participants-header">Participants (<span class="participants-count">0</span>)</h5>
+              <!-- aria-live helps assistive tech and some UIs notice updates -->
+              <ul class="participants-list" aria-live="polite" role="list">
+                <!-- JS will insert <li>participant@example.edu</li> here -->
+              </ul>
+            </div>
+          </article>
+        </template>
       </section>
 
       <section id="signup-container">
