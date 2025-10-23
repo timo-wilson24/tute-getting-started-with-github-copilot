@@ -109,7 +109,7 @@ button:hover {
 }
 
 .message {
-  margin-top: 20px;
+  margin-top: 36px; /* increased spacing so messages appear lower on the page */
   padding: 10px;
   border-radius: 4px;
 }
@@ -141,4 +141,81 @@ footer {
   margin-top: 30px;
   padding: 20px;
   color: #666;
+}
+
+.participants {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed #eee;
+}
+
+.participants-header {
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* keep list-style and allow scrolling; do not use flex here (that hides bullets) */
+.participants-list {
+  list-style: none; /* hide default bullets */
+  margin: 0;
+  padding-left: 0;
+  max-height: 120px; /* limit height for many participants */
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* individual participant displayed as a subtle "chip" */
+.participants-list li {
+  background: linear-gradient(180deg, #ffffff, #fafafa);
+  border: 1px solid #eef2ff;
+  padding: 6px 10px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #1a237e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* make participant emails clickable and inherit chip styling */
+.participants-list li a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Remove (delete) button next to participant */
+.remove-participant {
+  background: transparent;
+  border: none;
+  color: #c62828;
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 1;
+  padding: 6px 8px;
+  margin-left: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.remove-participant:hover {
+  background: rgba(198, 40, 40, 0.08);
+}
+
+/* subtle scrollbar styling (modern browsers) */
+.participants-list::-webkit-scrollbar {
+  height: 6px;
+  width: 8px;
+}
+.participants-list::-webkit-scrollbar-thumb {
+  background: #d6d8ff;
+  border-radius: 6px;
 }
